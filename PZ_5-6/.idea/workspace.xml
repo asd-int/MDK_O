@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="1930e0ee-391a-402d-833a-776f0561ca96" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/clinic_project/core/urls.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/pz_5-6.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/pz_5-6.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clinic_project/clinic/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinic_project/clinic/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clinic_project/clinic/templates/appointment_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/clinic_project/clinic/templates/appointment_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clinic_project/clinic/templates/doctor_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/clinic_project/clinic/templates/doctor_detail.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clinic_project/clinic/templates/doctor_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/clinic_project/clinic/templates/doctor_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clinic_project/clinic/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinic_project/clinic/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clinic_project/clinic/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinic_project/clinic/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clinic_project/clinic_project/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinic_project/clinic_project/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clinic_project/clinic_project/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/clinic_project/clinic_project/templates/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clinic_project/core/templates/core/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/clinic_project/core/templates/home.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clinic_project/core/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinic_project/core/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -13,6 +27,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -30,17 +45,31 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "codeWithMe.voiceChat.enabledByDefault": "false",
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/juidh/OneDrive/Desktop/MDK_O/PZ_5-6",
+    "last_opened_file_path": "C:/Users/juidh/OneDrive/Desktop/MDK_O/PZ_5-6/clinic_project/clinic_project/templates",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\juidh\OneDrive\Desktop\MDK_O\PZ_5-6\clinic_project\clinic_project\templates" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\juidh\OneDrive\Desktop\MDK_O\PZ_5-6\clinic_project\core\templates" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>

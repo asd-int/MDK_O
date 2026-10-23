@@ -17,8 +17,8 @@ class Patient(models.Model):
     phone = models.CharField(max_length=20)
 
 class Appointment(models.Model):
-    doctor = models.ForeignKey(Doctor,on_delete=models.RESTRICT)
-    patient = models.ForeignKey(Patient,on_delete=models.RESTRICT)
+    doctor = models.ForeignKey(Doctor, on_delete=models.RESTRICT, related_name='appointments')
+    patient = models.ForeignKey(Patient, on_delete=models.RESTRICT, related_name='appointments')
     appt_date = models.DateField()
     appt_time = models.TimeField()
     prescriptions = models.TextField()

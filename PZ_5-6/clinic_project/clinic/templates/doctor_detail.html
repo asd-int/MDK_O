@@ -6,19 +6,27 @@
 <p>Кабинет: {{ doctor.cabinet }}</p>
 <p>Телефон: {{ doctor.phone }}</p>
 
-<h3>Расписание приёмов:</h3>
-{% if doctor.appointments.all %}
-    <ul>
-        {% for appt in doctor.appointments.all %}
-            <li>
-                {{ appt.appt_date }} в {{ appt.appt_time }} — {{ appt.patient.full_name }}
-                (полис: {{ appt.patient.policy }})
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>У врача пока нет записей.</p>
-{% endif %}
+<h3>Расписание приёмов</h3>
+<table border="1">
+    <tr>
+        <th>Дата</th>
+        <th>Время</th>
+        <th>Пациент</th>
+        <th>Полис</th>
+    </tr>
+    {% for appt in doctor.appointments.all %}
+        <tr>
+            <td>{{ appt.appt_date }}</td>
+            <td>{{ appt.appt_time }}</td>
+            <td>{{ appt.patient.full_name }}</td>
+            <td>{{ appt.patient.policy }}</td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="4">У врача пока нет записей</td>
+        </tr>
+    {% endfor %}
+</table>
 
-<a href="{% url 'clinic:doctor_list' %}">← К списку врачей</a>
+<a href="{% url 'doctor_list' %}">К списку врачей</a>
 {% endblock %}

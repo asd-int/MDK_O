@@ -2,16 +2,25 @@
 {% block title %}Врачи{% endblock %}
 {% block content %}
 <h1>Наши врачи</h1>
-<ul>
+
+<table border="1">
+    <tr>
+        <th>ФИО</th>
+        <th>Специальность</th>
+        <th>Кабинет</th>
+        <th>Телефон</th>
+    </tr>
     {% for doctor in doctors %}
-        <li>
-            <a href="{% url 'clinic:doctor_detail' pk=doctor.pk %}">
-                {{ doctor.full_name }}
-            </a>
-            — {{ doctor.specialty }}, каб. {{ doctor.cabinet }}, тел. {{ doctor.phone }}
-        </li>
+        <tr>
+            <td><a href="{% url 'doctor_detail' pk=doctor.pk %}">{{ doctor.full_name }}</a></td>
+            <td>{{ doctor.specialty }}</td>
+            <td>{{ doctor.cabinet }}</td>
+            <td>{{ doctor.phone }}</td>
+        </tr>
     {% empty %}
-        <li>Врачи не найдены.</li>
+        <tr>
+            <td colspan="4">Врачи не найдены</td>
+        </tr>
     {% endfor %}
-</ul>
+</table>
 {% endblock %}

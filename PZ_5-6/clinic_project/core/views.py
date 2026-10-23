@@ -8,4 +8,4 @@ def home(request):
         'patients_count': Patient.objects.count(),
         'appointments_count': Appointment.objects.count(),
     }
-    return render(request, 'core/home.html', context)
+    return render(request, 'home.html', context)
