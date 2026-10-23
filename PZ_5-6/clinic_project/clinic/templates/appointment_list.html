@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Приёмы{% endblock %}
+{% block content %}
+<h1>Приёмы на дату</h1>
+
+<!-- GET-форма фильтра по дате -->
+<form method="get" action="{% url 'clinic:appointment_list' %}">
+    <label>Дата:
+        <input type="date" name="date" value="{{ selected_date }}">
+    </label>
+    <button type="submit">Показать</button>
+</form>
+
+<hr>
+
+{% if appointments %}
+    <ul>
+        {% for appt in appointments %}
+            <li>
+                <strong>{{ appt.appt_time }}</strong> — {{ appt.patient.full_name }}
+                → {{ appt.doctor.full_name }} ({{ appt.doctor.specialty }})
+                {% if appt.diagnoses.all %}
+                    <br>Диагнозы:
+                    {% for d in appt.diagnoses.all %}
+                        {{ d.icd_code }} {{ d.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Приёмы не найдены{% if selected_date %} на {{ selected_date }}{% endif %}.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Поликлиника{% endblock %}</title>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'home' %}">Главная</a> |
+        <a href="{% url 'doctor_list' %}">Врачи</a> |
+        <a href="{% url 'appointment_list' %}">Приёмы</a> |
+    </nav>
+    <hr>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

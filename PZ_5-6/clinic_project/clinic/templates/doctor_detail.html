@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}{{ doctor.full_name }}{% endblock %}
+{% block content %}
+<h1>{{ doctor.full_name }}</h1>
+<p>Специальность: {{ doctor.specialty }}</p>
+<p>Кабинет: {{ doctor.cabinet }}</p>
+<p>Телефон: {{ doctor.phone }}</p>
+
+<h3>Расписание приёмов:</h3>
+{% if doctor.appointments.all %}
+    <ul>
+        {% for appt in doctor.appointments.all %}
+            <li>
+                {{ appt.appt_date }} в {{ appt.appt_time }} — {{ appt.patient.full_name }}
+                (полис: {{ appt.patient.policy }})
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>У врача пока нет записей.</p>
+{% endif %}
+
+<a href="{% url 'clinic:doctor_list' %}">← К списку врачей</a>
+{% endblock %}
