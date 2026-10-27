@@ -27,6 +27,7 @@
         </tr>
     {% endfor %}
 </table>
+<p>Всего приёмов у врача: {{ doctor.total_appointments }}</p>
 
 <a href="{% url 'clinic:doctor_list' %}">К списку врачей</a>
 {% endblock %}

@@ -17,17 +17,26 @@ class DoctorDetailView(DetailView):
         'appointments__patient', 'appointments__diagnoses'
     )
 
+    def get_object(self, queryset=None):
+        doctor = super().get_object(queryset)
+        doctor.total_appointments = len(doctor.appointments.all())
+        return doctor
 
-class AppointmentListView(ListView):
-    template_name = 'appointment_list.html'
-    context_object_name = 'appointments'
+class DateFilterMixin:
+    date_field = 'appt_date'
 
     def get_queryset(self):
-        queryset = Appointment.objects.select_related('doctor', 'patient')
+        qs = super().get_queryset()
         date = self.request.GET.get('date', '')
         if date:
-            queryset = queryset.filter(appt_date=date)
-        return queryset
+            qs = qs.filter(**{self.date_field: date})
+        return qs
+
+
+class AppointmentListView(DateFilterMixin,ListView):
+    template_name = 'appointment_list.html'
+    context_object_name = 'appointments'
+    queryset = Appointment.objects.select_related('doctor', 'patient')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
