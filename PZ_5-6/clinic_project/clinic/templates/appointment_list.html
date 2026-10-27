@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
+{% load clinic_tags %}
 {% block title %}Приёмы{% endblock %}
 {% block content %}
 <h1>Приёмы на дату</h1>
+<p>Всего записей в поликлинике: {% total_appointments %}</p>
 
 <form method="get" action="{% url 'clinic:appointment_list' %}">
     <input type="date" name="date" value="{{ selected_date }}">
@@ -11,26 +13,30 @@
 
 <table border="1">
     <tr>
-        <th>Пациент</th>
-        <th>Дата</th>
-        <th>Время</th>
-        <th>Врач</th>
-        <th>Специальность</th>
-    </tr>
+    <th>Пациент</th>
+    <th>Дата</th>
+    <th>Время</th>
+    <th>Длительность</th>
+    <th>Врач</th>
+    <th>Специальность</th>
+</tr>
     {% for appt in appointments %}
         <tr>
             <td>{{ appt.patient.full_name }}</td>
             <td>{{ appt.appt_date }}</td>
             <td>{{ appt.appt_time }}</td>
+            <td>{{ appt.duration|duration_minutes }}</td>
             <td>{{ appt.doctor.full_name }}</td>
             <td>{{ appt.doctor.specialty }}</td>
         </tr>
     {% empty %}
         <tr>
-            <td colspan="5">Приёмы не найдены</td>
+            <td colspan="6">Приёмы не найдены</td>
         </tr>
     {% endfor %}
 </table>
+
+{% show_busy_doctors 5 %}
 
 <h3>Новая запись</h3>
 {% if error %}

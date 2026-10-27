@@ -23,6 +23,7 @@ class Appointment(models.Model):
     appt_time = models.TimeField()
     prescriptions = models.TextField()
     diagnoses = models.ManyToManyField(Diagnosis,through='AppointmentDiagnosis')
+    duration = models.PositiveSmallIntegerField('Длительность, мин', default=30)
 
 
 class AppointmentDiagnosis(models.Model):

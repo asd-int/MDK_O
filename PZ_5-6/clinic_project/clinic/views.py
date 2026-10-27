@@ -1,25 +1,43 @@
-from django.shortcuts import render, get_object_or_404,redirect
-from .models import Doctor, Appointment, Patient
 from django.db import transaction
+from django.shortcuts import get_object_or_404, redirect
+from django.views.generic import DetailView, ListView
+from .models import Appointment, Doctor, Patient
 
 
-def doctor_list(request):
-    doctors = Doctor.objects.all()
-    return render(request, 'doctor_list.html', {'doctors': doctors})
+class DoctorListView(ListView):
+    model = Doctor
+    template_name = 'doctor_list.html'
+    context_object_name = 'doctors'
 
 
-def doctor_detail(request, pk):
-    doctor = get_object_or_404(
-        Doctor.objects.prefetch_related('appointments__patient', 'appointments__diagnoses'),
-        pk=pk
+class DoctorDetailView(DetailView):
+    template_name = 'doctor_detail.html'
+    context_object_name = 'doctor'
+    queryset = Doctor.objects.prefetch_related(
+        'appointments__patient', 'appointments__diagnoses'
     )
-    return render(request, 'doctor_detail.html', {'doctor': doctor})
 
 
-def appointment_list(request):
-    error = ''
+class AppointmentListView(ListView):
+    template_name = 'appointment_list.html'
+    context_object_name = 'appointments'
 
-    if request.method == 'POST':
+    def get_queryset(self):
+        queryset = Appointment.objects.select_related('doctor', 'patient')
+        date = self.request.GET.get('date', '')
+        if date:
+            queryset = queryset.filter(appt_date=date)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['selected_date'] = self.request.GET.get('date', '')
+        context['doctors'] = Doctor.objects.all()
+        context.setdefault('error', '')
+        return context
+
+    def post(self, request, *args, **kwargs):
+        error = ''
         doctor = get_object_or_404(Doctor, pk=request.POST.get('doctor'))
         policy = request.POST.get('policy', '').strip()
         appt_date = request.POST.get('appt_date')
@@ -27,7 +45,7 @@ def appointment_list(request):
 
         with transaction.atomic():
             if Appointment.objects.filter(
-                    doctor=doctor, appt_date=appt_date, appt_time=appt_time
+                doctor=doctor, appt_date=appt_date, appt_time=appt_time
             ).exists():
                 error = 'Это время у врача уже занято'
             else:
@@ -47,20 +65,13 @@ def appointment_list(request):
                 )
                 return redirect('clinic:appointment_list')
 
-    date = request.GET.get('date', '')
-    appointments = Appointment.objects.select_related('doctor', 'patient')
+        # при ошибке заново отрисовываем страницу со списком и сообщением
+        self.object_list = self.get_queryset()
+        context = self.get_context_data(error=error)
+        return self.render_to_response(context)
 
-    if date:
-        appointments = appointments.filter(appt_date=date)
 
-    return render(request, 'appointment_list.html', {
-        'appointments': appointments,
-        'selected_date': date,
-        'doctors': Doctor.objects.all(),
-        'error': error,
-    })
-
-def patient_list(request):
-    patients = Patient.objects.prefetch_related('appointments__diagnoses')
-    return render(request, 'patient_list.html', {'patients': patients})
-
+class PatientListView(ListView):
+    template_name = 'patient_list.html'
+    context_object_name = 'patients'
+    queryset = Patient.objects.prefetch_related('appointments__diagnoses')

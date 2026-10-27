@@ -1,0 +1,9 @@
+<h3>Самые занятые врачи</h3>
+{% for doctor in doctors %}
+    <p>
+        <a href="{% url 'clinic:doctor_detail' pk=doctor.pk %}">{{ doctor.full_name }}</a>
+        ({{ doctor.specialty }}) — {{ doctor.appointments_count }} записей
+    </p>
+{% empty %}
+    <p>Нет данных</p>
+{% endfor %}
