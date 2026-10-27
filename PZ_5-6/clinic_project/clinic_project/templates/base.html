@@ -1,19 +1,91 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Поликлиника{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.min.css">
+    <style>
+       body {
+           background-image: url('{% static "bg.jpg" %}');
+           background-size: cover;
+           background-position: center;
+           background-attachment: fixed;
+           background-repeat: no-repeat;
+           background-color: rgba(255, 255, 255, 0.3);
+           background-blend-mode: overlay;
+           min-height: 100vh;
+           display: flex;
+           flex-direction: column;
+       }
+    </style>
 </head>
 <body>
-    <nav>
-        <a href="{% url 'core:home' %}">Главная</a> |
-        <a href="{% url 'clinic:doctor_list' %}">Врачи</a> |
-        <a href="{% url 'clinic:appointment_list' %}">Приёмы</a> |
-        <a href="{% url 'clinic:patient_list' %}">Пациенты</a> |
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold text-primary d-flex align-items-center gap-2" href="{% url 'core:home' %}">
+                <i class="bi bi-heart-pulse-fill"></i> Поликлиника
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Переключить навигацию">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto gap-2">
+                    <li class="nav-item">
+                        <a class="nav-link px-3 rounded-3 text-dark hover-bg-light d-flex align-items-center gap-2" href="{% url 'core:home' %}">
+                            <i class="bi bi-house-door"></i> Главная
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 rounded-3 text-dark hover-bg-light d-flex align-items-center gap-2" href="{% url 'clinic:doctor_list' %}">
+                            <i class="bi bi-person-badge"></i> Врачи
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 rounded-3 text-dark hover-bg-light d-flex align-items-center gap-2" href="{% url 'clinic:appointment_list' %}">
+                            <i class="bi bi-calendar-check"></i> Приёмы
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 rounded-3 text-dark hover-bg-light d-flex align-items-center gap-2" href="{% url 'clinic:patient_list' %}">
+                            <i class="bi bi-people"></i> Пациенты
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </nav>
-    <hr>
-    <main>
+
+
+    <main class="pb-5">
         {% block content %}{% endblock %}
     </main>
+
+
+    <footer class="bg-white shadow-sm py-4 mt-auto">
+        <div class="container-fluid px-4">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    <span class="text-muted small">
+                        <i class="bi bi-c-circle"></i> {% now "Y" %} Поликлиника. Все права защищены.
+                    </span>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <a href="#" class="text-decoration-none text-muted small me-3 hover-bg-light p-1 rounded">
+                        <i class="bi bi-telephone"></i> Контакты
+                    </a>
+                    <a href="#" class="text-decoration-none text-muted small hover-bg-light p-1 rounded">
+                        <i class="bi bi-envelope"></i> support@clinic.ru
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
