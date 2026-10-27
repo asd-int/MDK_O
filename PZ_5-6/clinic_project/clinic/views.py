@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404,redirect
 from .models import Doctor, Appointment, Patient
+from django.db import transaction
 
 
 def doctor_list(request):
@@ -21,23 +22,30 @@ def appointment_list(request):
     if request.method == 'POST':
         doctor = get_object_or_404(Doctor, pk=request.POST.get('doctor'))
         policy = request.POST.get('policy', '').strip()
+        appt_date = request.POST.get('appt_date')
+        appt_time = request.POST.get('appt_time')
 
-        if Patient.objects.filter(policy=policy).exists():
-            error = 'Пациент с таким полисом уже существует'
-        else:
-            patient = Patient.objects.create(
-                full_name=request.POST.get('full_name'),
-                birth_date=request.POST.get('birth_date'),
-                policy=policy,
-                phone=request.POST.get('phone'),
-            )
-            Appointment.objects.create(
-                doctor=doctor,
-                patient=patient,
-                appt_date=request.POST.get('appt_date'),
-                appt_time=request.POST.get('appt_time'),
-            )
-            return redirect('appointment_list')
+        with transaction.atomic():
+            if Appointment.objects.filter(
+                    doctor=doctor, appt_date=appt_date, appt_time=appt_time
+            ).exists():
+                error = 'Это время у врача уже занято'
+            else:
+                patient, created = Patient.objects.get_or_create(
+                    policy=policy,
+                    defaults={
+                        'full_name': request.POST.get('full_name'),
+                        'birth_date': request.POST.get('birth_date'),
+                        'phone': request.POST.get('phone'),
+                    },
+                )
+                Appointment.objects.create(
+                    doctor=doctor,
+                    patient=patient,
+                    appt_date=appt_date,
+                    appt_time=appt_time,
+                )
+                return redirect('clinic:appointment_list')
 
     date = request.GET.get('date', '')
     appointments = Appointment.objects.select_related('doctor', 'patient')
@@ -55,3 +63,4 @@ def appointment_list(request):
 def patient_list(request):
     patients = Patient.objects.prefetch_related('appointments__diagnoses')
     return render(request, 'patient_list.html', {'patients': patients})
+

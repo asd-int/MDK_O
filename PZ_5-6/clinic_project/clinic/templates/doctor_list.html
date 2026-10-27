@@ -12,7 +12,7 @@
     </tr>
     {% for doctor in doctors %}
         <tr>
-            <td><a href="{% url 'doctor_detail' pk=doctor.pk %}">{{ doctor.full_name }}</a></td>
+            <td><a href="{% url 'clinic:doctor_detail' pk=doctor.pk %}">{{ doctor.full_name }}</a></td>
             <td>{{ doctor.specialty }}</td>
             <td>{{ doctor.cabinet }}</td>
             <td>{{ doctor.phone }}</td>

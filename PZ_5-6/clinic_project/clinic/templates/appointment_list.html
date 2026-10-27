@@ -3,10 +3,10 @@
 {% block content %}
 <h1>Приёмы на дату</h1>
 
-<form method="get" action="{% url 'appointment_list' %}">
+<form method="get" action="{% url 'clinic:appointment_list' %}">
     <input type="date" name="date" value="{{ selected_date }}">
     <button type="submit">Показать</button>
-    <a href="{% url 'appointment_list' %}">Сбросить фильтр</a>
+    <a href="{% url 'clinic:appointment_list' %}">Сбросить фильтр</a>
 </form>
 
 <table border="1">
@@ -36,7 +36,7 @@
 {% if error %}
     <p>{{ error }}</p>
 {% endif %}
-<form method="post" action="{% url 'appointment_list' %}">
+<form method="post" action="{% url 'clinic:appointment_list' %}">
     {% csrf_token %}
     <p>
         <label>Врач:
@@ -49,32 +49,44 @@
     </p>
     <p>
         <label>ФИО пациента:
-            <input type="text" name="full_name" required>
+            <input type="text" name="full_name" required
+                   minlength="5" maxlength="100"
+                   pattern="[А-Яа-яЁёA-Za-z\s\-]+"
+                   title="Только буквы, пробелы и дефис, от 5 символов">
         </label>
     </p>
     <p>
         <label>Дата рождения:
-            <input type="date" name="birth_date" required>
+            <input type="date" name="birth_date" required
+                   min="1900-01-01" max="{% now 'Y-m-d' %}">
         </label>
     </p>
     <p>
         <label>Номер полиса:
-            <input type="text" name="policy" required>
+            <input type="text" name="policy" required
+                   minlength="3" maxlength="20"
+                   pattern="[A-Za-z0-9]+"
+                   title="Только латинские буквы и цифры, от 3 до 20 символов">
         </label>
     </p>
     <p>
         <label>Телефон:
-            <input type="text" name="phone" required>
+            <input type="tel" name="phone" required
+                   pattern="\+?[0-9]{9,15}"
+                   title="Только цифры, можно с + в начале, от 9 до 15 цифр">
         </label>
     </p>
     <p>
         <label>Дата приёма:
-            <input type="date" name="appt_date" required>
+            <input type="date" name="appt_date" required
+                   min="{% now 'Y-m-d' %}">
         </label>
     </p>
     <p>
         <label>Время приёма:
-            <input type="time" name="appt_time" required>
+            <input type="time" name="appt_time" required
+                   min="08:00" max="20:00" step="900"
+                   title="Приём с 08:00 до 20:00, шаг 15 минут">
         </label>
     </p>
     <button type="submit">Записаться</button>
