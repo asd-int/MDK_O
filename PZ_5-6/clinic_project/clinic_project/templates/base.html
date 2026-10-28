@@ -67,25 +67,31 @@
 
 
     <footer class="bg-white shadow-sm py-4 mt-auto">
-        <div class="container-fluid px-4">
-            <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                    <span class="text-muted small">
-                        <i class="bi bi-c-circle"></i> {% now "Y" %} Поликлиника. Все права защищены.
-                    </span>
+    <div class="container-fluid px-4">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="fs-5 fw-bold text-primary d-flex align-items-center gap-2 mb-2">
+                    <i class="bi bi-heart-pulse-fill"></i> Поликлиника
                 </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <a href="#" class="text-decoration-none text-muted small me-3 hover-bg-light p-1 rounded">
-                        <i class="bi bi-telephone"></i> Контакты
-                    </a>
-                    <a href="#" class="text-decoration-none text-muted small hover-bg-light p-1 rounded">
-                        <i class="bi bi-envelope"></i> support@clinic.ru
-                    </a>
-                </div>
+                <div class="text-muted small">Запись на приём без очередей и вся история обращений в одном месте.</div>
+            </div>
+            <div class="col-md-4">
+                <div class="fw-bold mb-2"><i class="bi bi-clock"></i> Режим работы</div>
+                <div class="text-muted small">Пн–Пт: 8:00–20:00</div>
+                <div class="text-muted small">Сб: 9:00–15:00</div>
+                <div class="text-muted small">Вс: выходной</div>
+            </div>
+            <div class="col-md-4">
+                <div class="fw-bold mb-2"><i class="bi bi-telephone"></i> Регистратура</div>
+                <div class="text-muted small">+7 (172) 000-00-00</div>
+                <div class="text-muted small">reg@poliklinika.example</div>
+                <div class="text-muted small">г. Новодарск, ул. Здоровья, д. 1</div>
             </div>
         </div>
-    </footer>
-
+        <hr>
+        <div class="text-muted small">© {% now "Y" %} Поликлиника</div>
+    </div>
+</footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

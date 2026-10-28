@@ -102,7 +102,7 @@
                         <select id="doctor_name_label" name="doctor" class="form-select" required>
                             <option value="">Выберите врача</option>
                             {% for doctor in doctors %}
-                                <option value="{{ doctor.pk }}">{{ doctor.full_name }} ({{ doctor.specialty }})</option>
+                                <option value="{{ doctor.pk }}" {% if request.POST.doctor == doctor.pk|stringformat:"s" %}selected{% endif %}>{{ doctor.full_name }} ({{ doctor.specialty }})</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -111,6 +111,7 @@
                         <div class="col-8">
                             <label for="patient_name_label" class="form-label">ФИО пациента</label>
                             <input type="text" class="form-control" id="patient_name_label" name="full_name" required
+                                   value="{{ request.POST.full_name }}"
                                    minlength="5" maxlength="100"
                                    pattern="[А-Яа-яЁёA-Za-z\s\-]+"
                                    title="Только буквы, пробелы и дефис, от 5 символов">
@@ -118,6 +119,7 @@
                         <div class="col-4">
                             <label for="date_birth_label" class="form-label">Дата рождения</label>
                             <input type="date" class="form-control" id="date_birth_label" name="birth_date" required
+                                   value="{{ request.POST.birth_date }}"
                                    min="1900-01-01" max="{% now 'Y-m-d' %}">
                         </div>
                     </div>
@@ -126,6 +128,7 @@
                         <div class="col-6">
                             <label for="policy_label" class="form-label">Номер полиса</label>
                             <input type="text" class="form-control" id="policy_label" name="policy" required
+                                   value="{{ request.POST.policy }}"
                                    minlength="3" maxlength="20"
                                    pattern="[A-Za-z0-9]+"
                                    title="Только латинские буквы и цифры, от 3 до 20 символов">
@@ -133,6 +136,7 @@
                         <div class="col-6">
                             <label for="phone_label" class="form-label">Телефон</label>
                             <input type="tel" class="form-control" id="phone_label" name="phone" required
+                                   value="{{ request.POST.phone }}"
                                    pattern="\+?[0-9]{9,15}"
                                    title="Только цифры, можно с + в начале, от 9 до 15 цифр">
                         </div>
@@ -142,13 +146,15 @@
                         <div class="col-6">
                             <label for="appt_date_label" class="form-label">Дата приема</label>
                             <input type="date" class="form-control" id="appt_date_label" name="appt_date" required
+                                   value="{{ request.POST.appt_date }}"
                                    min="{% now 'Y-m-d' %}">
                         </div>
                         <div class="col-6">
                             <label for="appt_time_label" class="form-label">Время приема</label>
                             <input type="time" class="form-control" id="appt_time_label" name="appt_time" required
-                                   min="08:00" max="20:00" step="900"
-                                   title="Приём с 08:00 до 20:00, шаг 15 минут">
+                                   value="{{ request.POST.appt_time }}"
+                                   min="08:00" max="20:00" step="300"
+                                   title="Приём с 08:00 до 20:00, шаг 5 минут">
                         </div>
                     </div>
 

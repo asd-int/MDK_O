@@ -1,33 +1,129 @@
 {% extends 'base.html' %}
+{% load clinic_tags %}
 {% block title %}{{ doctor.full_name }}{% endblock %}
 {% block content %}
-<h1>{{ doctor.full_name }}</h1>
-<p>Специальность: {{ doctor.specialty }}</p>
-<p>Кабинет: {{ doctor.cabinet }}</p>
-<p>Телефон: {{ doctor.phone }}</p>
 
-<h3>Расписание приёмов</h3>
-<table border="1">
-    <tr>
-        <th>Дата</th>
-        <th>Время</th>
-        <th>Пациент</th>
-        <th>Полис</th>
-    </tr>
-    {% for appt in doctor.appointments.all %}
-        <tr>
-            <td>{{ appt.appt_date }}</td>
-            <td>{{ appt.appt_time }}</td>
-            <td>{{ appt.patient.full_name }}</td>
-            <td>{{ appt.patient.policy }}</td>
-        </tr>
-    {% empty %}
-        <tr>
-            <td colspan="4">У врача пока нет записей</td>
-        </tr>
-    {% endfor %}
-</table>
-<p>Всего приёмов у врача: {{ doctor.total_appointments }}</p>
+<div class="container-fluid mt-4">
+    <h1 class="text-center mb-4 fw-bold">Карточка врача</h1>
+</div>
 
-<a href="{% url 'clinic:doctor_list' %}">К списку врачей</a>
+<div class="container-fluid px-4">
+    <div class="row g-4">
+
+        <div class="col-md-4">
+            <div class="bg-white shadow rounded p-4 text-center">
+                <div class="rounded-circle bg-light text-secondary d-flex align-items-center justify-content-center mx-auto mb-3"
+                     style="width: 120px; height: 120px;">
+                    Фото
+                </div>
+                <h3 class="fw-bold mb-1">{{ doctor.full_name }}</h3>
+                <p class="text-secondary mb-3">{{ doctor.specialty }}</p>
+
+                <div class="d-flex justify-content-between align-items-center border rounded p-2 px-3 mb-3 text-start">
+                    <span>Всего приёмов</span>
+                    <span class="badge text-bg-primary fs-6">{{ doctor.total_appointments }}</span>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <a href="{% url 'clinic:appointment_list' %}" class="btn btn-primary">Записать на приём</a>
+                    <a href="{% url 'clinic:doctor_list' %}" class="btn btn-secondary">К списку врачей</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+
+            <div class="bg-white shadow rounded p-3 mb-4">
+                <h4 class="fw-bold mb-3">
+                    Предстоящие приёмы
+                    <span class="badge text-bg-primary">{{ doctor.upcoming|length }}</span>
+                </h4>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Пациент</th>
+                                <th>Дата</th>
+                                <th>Время</th>
+                                <th>Длительность</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for a in doctor.upcoming %}
+                                <tr>
+                                    <td>{{ a.patient.full_name }}</td>
+                                    <td>{{ a.appt_date }}</td>
+                                    <td>{{ a.appt_time }}</td>
+                                    <td>{{ a.duration|duration_minutes }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">Предстоящих приёмов нет</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-white shadow rounded p-3">
+                <h4 class="fw-bold mb-3">
+                    Прошедшие приёмы
+                    <span class="badge text-bg-secondary">{{ doctor.past|length }}</span>
+                </h4>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Пациент</th>
+                                <th>Дата</th>
+                                <th>Время</th>
+                                <th>Длительность</th>
+                                <th>Диагноз</th>
+                                <th>Внести длительность и диагноз</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for a in doctor.past %}
+                                {% with d=a.diagnoses.all.0 %}
+                                <tr>
+                                    <td>{{ a.patient.full_name }}</td>
+                                    <td>{{ a.appt_date }}</td>
+                                    <td>{{ a.appt_time }}</td>
+                                    <td>{{ a.duration|duration_minutes }}</td>
+                                    <td>
+                                        {% if d %}{{ d.name }}{% else %}<span class="text-muted">не указан</span>{% endif %}
+                                    </td>
+                                    <td>
+                                        <form method="post" class="d-flex gap-2">
+    {% csrf_token %}
+    <input type="hidden" name="appointment" value="{{ a.pk }}">
+    <input type="number" name="duration" class="form-control form-control-sm"
+           value="{{ a.duration }}" min="5" max="480" step="5" required
+           style="width: 80px" title="Длительность, мин">
+    <input type="text" name="icd_code" class="form-control form-control-sm"
+           value="{{ cur.icd_code|default:'' }}" maxlength="10" placeholder="Код МКБ"
+           style="width: 100px">
+    <input type="text" name="diagnosis_name" class="form-control form-control-sm"
+           value="{{ cur.name|default:'' }}" maxlength="255" placeholder="Диагноз"
+           style="min-width: 160px">
+    <button type="submit" class="btn btn-sm btn-primary">Сохранить</button>
+</form>
+                                    </td>
+                                </tr>
+                                {% endwith %}
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">Прошедших приёмов нет</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 {% endblock %}

@@ -1,30 +1,93 @@
 {% extends 'base.html' %}
+{% load cache %}
 {% load clinic_tags %}
 {% block title %}Врачи{% endblock %}
 {% block content %}
-<h1>Наши врачи</h1>
-<p>Записей в поликлинике: {% total_appointments %}</p>
 
-<table border="1">
-    <tr>
-        <th>ФИО</th>
-        <th>Специальность</th>
-        <th>Кабинет</th>
-        <th>Телефон</th>
-    </tr>
-    {% for doctor in doctors %}
-        <tr>
-            <td><a href="{% url 'clinic:doctor_detail' pk=doctor.pk %}">{{ doctor.full_name }}</a></td>
-            <td>{{ doctor.specialty }}</td>
-            <td>{{ doctor.cabinet }}</td>
-            <td>{{ doctor.phone }}</td>
-        </tr>
-    {% empty %}
-        <tr>
-            <td colspan="4">Врачи не найдены</td>
-        </tr>
-    {% endfor %}
-</table>
+<div class="container-fluid mt-4">
+    <h1 class="text-center mb-4 fw-bold">Врачи</h1>
+</div>
 
-{% show_busy_doctors 3 %}
+<div class="container-fluid px-4">
+    <div class="row g-4">
+
+        <div class="col-md-3">
+            <div class="shadow rounded bg-white p-3">
+                {% cache 0 cache_doctors %}
+                    {% show_busy_doctors 5 %}
+                {% endcache %}
+            </div>
+        </div>
+
+        <div class="col-md-9">
+
+            <div class="card mb-4 bg-white shadow border-0">
+                <div class="card-body">
+                    <form method="get" class="row g-2 align-items-end text-start">
+
+                        <div class="col-md-5">
+                            <label for="filter_q" class="form-label small fw-bold">Поиск по ФИО</label>
+                            <input type="text" id="filter_q" name="q" class="form-control"
+                                   placeholder="Введите фамилию" value="{{ request.GET.q }}">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="filter_specialty" class="form-label small fw-bold">Специальность</label>
+                            <select id="filter_specialty" name="specialty" class="form-select">
+                                <option value="">Все специальности</option>
+                                {% for s in specialties %}
+                                    <option value="{{ s }}" {% if request.GET.specialty == s %}selected{% endif %}>{{ s }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-2 d-grid">
+                            <button type="submit" class="btn btn-primary">Показать</button>
+                        </div>
+
+                        <div class="col-md-2 d-grid">
+                            <a href="{% url 'clinic:doctor_list' %}" class="btn btn-secondary">Сбросить</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+                {% for doctor in doctors %}
+                    <div class="col">
+                        <div class="card h-100 shadow border-0">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center gap-3 mb-3">
+                                    <div class="rounded-circle bg-light text-secondary fw-bold fs-4 d-flex align-items-center justify-content-center flex-shrink-0"
+                                         style="width: 56px; height: 56px;">
+                                        {{ doctor.full_name|slice:":1" }}
+                                    </div>
+                                    <div>
+                                        <a href="{% url 'clinic:doctor_detail' doctor.pk %}"
+                                           class="fw-bold fs-5 text-decoration-none">{{ doctor.full_name }}</a>
+                                        <div class="text-secondary small">{{ doctor.specialty }}</div>
+                                    </div>
+                                </div>
+                                <div class="small">
+                                    <div>Кабинет: <span class="text-secondary">{{ doctor.cabinet }}</span></div>
+                                    <div>Телефон: <span class="text-secondary">{{ doctor.phone }}</span></div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white small">
+                                Всего приёмов
+                                <span class="badge text-bg-primary">{{ doctor.total_appointments }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12">
+                        <div class="bg-white shadow rounded p-3 text-center text-muted">Врачи не найдены</div>
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+</div>
+
 {% endblock %}

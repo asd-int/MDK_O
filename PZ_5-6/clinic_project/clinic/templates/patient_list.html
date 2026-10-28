@@ -1,34 +1,53 @@
 {% extends 'base.html' %}
-{% block title %}Пациенты{% endblock %}
-{% block content %}
-<h1>Пациенты</h1>
 
-<table border="1">
-    <tr>
-        <th>ФИО</th>
-        <th>Дата рождения</th>
-        <th>Полис</th>
-        <th>Телефон</th>
-        <th>Диагнозы</th>
-    </tr>
-    {% for patient in patients %}
-        <tr>
-            <td>{{ patient.full_name }}</td>
-            <td>{{ patient.birth_date }}</td>
-            <td>{{ patient.policy }}</td>
-            <td>{{ patient.phone }}</td>
-            <td>
-                {% for appt in patient.appointments.all %}
-                    {% for d in appt.diagnoses.all %}
-                        {{ appt.appt_date }} {{ d.icd_code }} {{ d.name }}<br>
-                    {% endfor %}
-                {% endfor %}
-            </td>
-        </tr>
-    {% empty %}
-        <tr>
-            <td colspan="5">Пациенты не найдены</td>
-        </tr>
+{% block title %}Пациенты{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h1 class="text-center mb-4 fw-bold">Пациенты</h1>
+</div>
+
+<div class="container">
+    <div class="table-responsive bg-white shadow rounded p-3 border">
+        <table class="table table-striped table-hover align-middle mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>ФИО</th>
+                    <th>Дата рождения</th>
+                    <th>Полис</th>
+                    <th>Телефон</th>
+                    <th>Диагнозы</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for patient in patients %}
+                    <tr>
+                        <td>{{ patient.full_name }}</td>
+                        <td class="text-nowrap">{{ patient.birth_date }}</td>
+                        <td class="text-nowrap">{{ patient.policy }}</td>
+                        <td class="text-nowrap">{{ patient.phone }}</td>
+                        <td>
+    {% for appt in patient.appointments.all %}
+        {% for diagnosis in appt.diagnoses.all %}
+            <div>
+                {{ appt.appt_date }}
+                <span class="badge text-bg-secondary">{{ diagnosis.icd_code }}</span>
+                {{ diagnosis.name }}
+            </div>
+        {% endfor %}
     {% endfor %}
-</table>
+    {% if not patient.diag_count %}
+        <span class="text-muted">не указаны</span>
+    {% endif %}
+</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">Пациенты не найдены</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}
