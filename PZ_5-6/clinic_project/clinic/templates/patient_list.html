@@ -27,19 +27,19 @@
                         <td class="text-nowrap">{{ patient.policy }}</td>
                         <td class="text-nowrap">{{ patient.phone }}</td>
                         <td>
-    {% for appt in patient.appointments.all %}
-        {% for diagnosis in appt.diagnoses.all %}
-            <div>
-                {{ appt.appt_date }}
-                <span class="badge text-bg-secondary">{{ diagnosis.icd_code }}</span>
-                {{ diagnosis.name }}
-            </div>
-        {% endfor %}
-    {% endfor %}
-    {% if not patient.diag_count %}
-        <span class="text-muted">не указаны</span>
-    {% endif %}
-</td>
+                            {% for appt in patient.appointments.all %}
+                                {% for diagnosis in appt.diagnoses.all %}
+                                    <div>
+                                        {{ appt.appt_date }}
+                                        <span class="badge text-bg-secondary">{{ diagnosis.icd_code }}</span>
+                                        {{ diagnosis.name }}
+                                    </div>
+                                {% endfor %}
+                            {% endfor %}
+                            {% if not patient.diag_count %}
+                                <span class="text-muted">не указаны</span>
+                            {% endif %}
+                        </td>
                     </tr>
                 {% empty %}
                     <tr>

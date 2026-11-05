@@ -2,28 +2,37 @@
 {% load cache %}
 {% load clinic_tags %}
 {% block title %}Приёмы{% endblock %}
-{% block content %}
 
-<div class="container-fluid mt-4">
-    <h1 class="text-center mb-4 fw-bold">Список приемов</h1>
+{% block content %}
+<div class="container-fluid px-4 mt-3">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'core:home' %}"><i class="bi bi-house-door"></i> Главная</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Приёмы</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="container-fluid mt-2">
+    <h1 class="text-center mb-4 fw-bold">Список приёмов</h1>
 </div>
 
 <div class="container-fluid px-4">
     <div class="row g-4">
         <div class="col-md-3">
-
             <div class="shadow rounded bg-white p-3">
-                {% cache 0 cache_doctors %}
+                {% cache 300 busy_doctors_sidebar %}
                     {% show_busy_doctors 5 %}
                 {% endcache %}
             </div>
         </div>
-        <div class="col-md-6">
 
+        <div class="col-md-6">
             <div class="card mb-4 bg-white shadow border-0">
                 <div class="card-body">
                     <form method="get" class="row g-2 align-items-end text-start">
-
                         <div class="col-md-4">
                             <label for="filter_doctor" class="form-label small fw-bold">Фильтр по врачу</label>
                             <select id="filter_doctor" name="doctor" class="form-select">
@@ -86,9 +95,10 @@
         </div>
 
         <div class="col-md-3">
-            {% if error %}
+            {% if error or request.GET.error %}
                 <div class="alert alert-danger mb-3 py-2 text-start shadow" role="alert">
-                    {{ error }}
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    {{ error|default:request.GET.error }}
                 </div>
             {% endif %}
 
@@ -102,7 +112,9 @@
                         <select id="doctor_name_label" name="doctor" class="form-select" required>
                             <option value="">Выберите врача</option>
                             {% for doctor in doctors %}
-                                <option value="{{ doctor.pk }}" {% if request.POST.doctor == doctor.pk|stringformat:"s" %}selected{% endif %}>{{ doctor.full_name }} ({{ doctor.specialty }})</option>
+                                <option value="{{ doctor.pk }}" {% if request.POST.doctor == doctor.pk|stringformat:"s" %}selected{% endif %}>
+                                    {{ doctor.full_name }} ({{ doctor.specialty }})
+                                </option>
                             {% endfor %}
                         </select>
                     </div>
@@ -144,13 +156,13 @@
 
                     <div class="row mb-4 text-start">
                         <div class="col-6">
-                            <label for="appt_date_label" class="form-label">Дата приема</label>
+                            <label for="appt_date_label" class="form-label">Дата приёма</label>
                             <input type="date" class="form-control" id="appt_date_label" name="appt_date" required
                                    value="{{ request.POST.appt_date }}"
                                    min="{% now 'Y-m-d' %}">
                         </div>
                         <div class="col-6">
-                            <label for="appt_time_label" class="form-label">Время приема</label>
+                            <label for="appt_time_label" class="form-label">Время приёма</label>
                             <input type="time" class="form-control" id="appt_time_label" name="appt_time" required
                                    value="{{ request.POST.appt_time }}"
                                    min="08:00" max="20:00" step="300"
@@ -163,9 +175,7 @@
                     </div>
                 </form>
             </div>
-
         </div>
     </div>
 </div>
-
 {% endblock %}

@@ -51,6 +51,7 @@ class TripPrice:
         liters = self.first * self.second / 100
         return liters * self.third
 
+
 trip = TripPrice()
 trip.read()
 trip.display()

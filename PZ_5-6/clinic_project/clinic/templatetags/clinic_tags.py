@@ -6,21 +6,17 @@ from clinic.models import Appointment, Doctor
 register = template.Library()
 
 
-
 @register.simple_tag
 def total_appointments():
     return Appointment.objects.count()
 
 
-
 @register.inclusion_tag('clinic/tags/busy_doctors.html')
 def show_busy_doctors(count=3):
-
     doctors = Doctor.objects.annotate(
         appointments_count=Count('appointments')
     ).order_by('-appointments_count')[:count]
     return {'doctors': doctors}
-
 
 
 @register.filter

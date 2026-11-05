@@ -1,12 +1,30 @@
-from django.db import transaction
-from django.shortcuts import get_object_or_404, redirect
-from django.views.generic import DetailView, ListView
-from .models import *
 from datetime import datetime, timedelta
-from django.utils import timezone
+from django.contrib import messages
+from django.db import transaction
 from django.db.models import Count
+from django.shortcuts import get_object_or_404, redirect
+from django.utils import timezone
+from django.views.generic import DetailView, ListView
+
+from .models import Appointment, AppointmentDiagnosis, Diagnosis, Doctor, Patient
 
 DEFAULT_DURATION = 10
+
+
+class DateFilterMixin:
+    date_field = 'appt_date' # название поля из модели по которому фильтруется дата
+    doctor_field = 'doctor' # название поля с внешним ключом у врача
+
+    def get_queryset(self):   # переопределяется метод получения данных из бд
+        qs = super().get_queryset()  # передается список полученный в DoctorListView(ListView)
+        date = self.request.GET.get('date', '')
+        doctor = self.request.GET.get('doctor', '') # получаются данные из url строки, работает как if else, но через запятую
+        if date:
+            qs = qs.filter(**{self.date_field: date}) # звездочки нужны для подставления имени поля из переменной date_field, без них не подставляется
+        if doctor:
+            qs = qs.filter(**{self.doctor_field: doctor}) # звездочки нужны для подставления имени поля из переменной doctor_field, без них не подставляется
+        return qs
+
 
 class DoctorListView(ListView):
     model = Doctor
@@ -14,18 +32,22 @@ class DoctorListView(ListView):
     context_object_name = 'doctors'
 
     def get_queryset(self):
-        qs = Doctor.objects.annotate(total_appointments=Count('appointments'))
-        q = self.request.GET.get('q', '').strip()
+        qs = Doctor.objects.annotate(total_appointments=Count('appointments')) #выполняется запрос который считает количество приемов у доктора
+        q = self.request.GET.get('q', '').strip() #достается значение из формы и стрипом убираются пробелы, если пусто, то ничего не передаем
         specialty = self.request.GET.get('specialty', '')
-        if q:
+        if q: # если что то написано в строке поиска, фильтруется по ФИО
             qs = qs.filter(full_name__icontains=q)
         if specialty:
             qs = qs.filter(specialty=specialty)
         return qs
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs): # данные для выпадающего списка
         context = super().get_context_data(**kwargs)
-        context['specialties'] = Doctor.objects.values_list('specialty', flat=True).distinct().order_by('specialty')
+        context['specialties'] = (
+            Doctor.objects.values_list('specialty', flat=True)
+            .distinct()
+            .order_by('specialty')
+        )
         return context
 
 
@@ -37,28 +59,28 @@ class DoctorDetailView(DetailView):
     )
 
     def get_object(self, queryset=None):
-        doctor = super().get_object(queryset)
-        now = timezone.localtime().replace(tzinfo=None)
+        doctor = super().get_object(queryset) #ищется врач по первичному ключу из адресной строки
+        now = timezone.localtime().replace(tzinfo=None) #задается текущее время, убирается tzinfo для корректности сравнения
 
         appointments = sorted(
             doctor.appointments.all(),
             key=lambda a: (a.appt_date, a.appt_time),
         )
-        upcoming, past = [], []
+        upcoming, past = [], [] # два списка для будущих и прошедших
         for a in appointments:
             start = datetime.combine(a.appt_date, a.appt_time)
             (upcoming if start >= now else past).append(a)
 
-        doctor.total_appointments = len(appointments)
+        doctor.total_appointments = len(appointments) # общее число приемов
         doctor.upcoming = upcoming
-        doctor.past = past[::-1]
+        doctor.past = past[::-1] # -1 выводит список с конца
         return doctor
 
     def post(self, request, *args, **kwargs):
         doctor = self.get_object()
         appt = get_object_or_404(
             Appointment, pk=request.POST.get('appointment'), doctor=doctor
-        )
+        ) # по ID достается прием, если не совпадает то выходит ошибка 404
 
         now = timezone.localtime().replace(tzinfo=None)
         if datetime.combine(appt.appt_date, appt.appt_time) < now:
@@ -68,42 +90,34 @@ class DoctorDetailView(DetailView):
                 minutes = 0
             icd_code = request.POST.get('icd_code', '').strip().upper()
             name = request.POST.get('diagnosis_name', '').strip()
+            prescriptions = request.POST.get('prescriptions', '').strip() #обрезаются лишние пробелы и ловится ошибка если вводится не int значение
 
             with transaction.atomic():
                 if 5 <= minutes <= 480:
                     appt.duration = minutes
                     appt.save(update_fields=['duration'])
+                if prescriptions:
+                    appt.prescriptions = prescriptions
+                    appt.save(update_fields=['prescriptions'])
                 if icd_code and name:
-                    # 1. диагноз в справочнике: берём существующий или создаём новый
-                    diagnosis, _ = Diagnosis.objects.get_or_create(icd_code=icd_code, name=name)
-                    # 2. связь с приёмом: прежнюю удаляем, новую создаём (перезапись)
+                    diagnosis, _ = Diagnosis.objects.get_or_create(
+                        icd_code=icd_code, name=name
+                    ) # ищется такой же диагноз в справочнике, если нет то создается
                     AppointmentDiagnosis.objects.filter(appointment=appt).delete()
-                    AppointmentDiagnosis.objects.create(appointment=appt, diagnosis=diagnosis)
+                    AppointmentDiagnosis.objects.create(
+                        appointment=appt, diagnosis=diagnosis
+                    )
+            messages.success(request, 'Данные приёма успешно сохранены.')
 
         return redirect(request.path)
 
 
-class DateFilterMixin:
-    date_field = 'appt_date'
-    doctor_field = 'doctor'
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        date = self.request.GET.get('date', '')
-        doctor = self.request.GET.get('doctor', '')
-        if date:
-            qs = qs.filter(**{self.date_field: date})
-        if doctor:
-            qs = qs.filter(**{self.doctor_field: doctor})
-        return qs
-
-
-class AppointmentListView(DateFilterMixin,ListView):
+class AppointmentListView(DateFilterMixin, ListView):
     template_name = 'appointment_list.html'
     context_object_name = 'appointments'
     queryset = Appointment.objects.select_related('doctor', 'patient')
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs):   
         context = super().get_context_data(**kwargs)
         context['selected_date'] = self.request.GET.get('date', '')
         context['doctors'] = Doctor.objects.all()
@@ -138,13 +152,21 @@ class AppointmentListView(DateFilterMixin,ListView):
 
                 if patient:
                     if patient.full_name.strip().lower() != input_name.lower():
-                        error = 'Полис принадлежит другому пациенту, проверьте данные'
+                        error = (
+                            'Имя пациента не совпадает с ФИО, '
+                            'указанным при регистрации'
+                        )
                     else:
                         Appointment.objects.create(
                             doctor=doctor,
                             patient=patient,
                             appt_date=appt_date,
                             appt_time=appt_time,
+                            prescriptions=request.POST.get('prescriptions', '').strip(),
+                        )
+                        messages.success(
+                            request,
+                            f'Запись к врачу {doctor.full_name} успешно создана!'
                         )
                         return redirect('clinic:appointment_list')
                 else:
@@ -159,6 +181,12 @@ class AppointmentListView(DateFilterMixin,ListView):
                         patient=patient,
                         appt_date=appt_date,
                         appt_time=appt_time,
+                        prescriptions=request.POST.get('prescriptions', '').strip(),
+                    )
+                    messages.success(
+                        request,
+                        f'Новый пациент зарегистрирован и записан к врачу '
+                        f'{doctor.full_name}!'
                     )
                     return redirect('clinic:appointment_list')
 

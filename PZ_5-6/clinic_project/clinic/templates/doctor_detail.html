@@ -1,15 +1,28 @@
 {% extends 'base.html' %}
 {% load clinic_tags %}
 {% block title %}{{ doctor.full_name }}{% endblock %}
-{% block content %}
 
-<div class="container-fluid mt-4">
+{% block content %}
+<div class="container-fluid px-4 mt-3">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'core:home' %}"><i class="bi bi-house-door"></i> Главная</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'clinic:doctor_list' %}">Врачи</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">{{ doctor.full_name }}</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="container-fluid mt-2">
     <h1 class="text-center mb-4 fw-bold">Карточка врача</h1>
 </div>
 
 <div class="container-fluid px-4">
     <div class="row g-4">
-
         <div class="col-md-4">
             <div class="bg-white shadow rounded p-4 text-center">
                 <div class="rounded-circle bg-light text-secondary d-flex align-items-center justify-content-center mx-auto mb-3"
@@ -32,7 +45,6 @@
         </div>
 
         <div class="col-md-8">
-
             <div class="bg-white shadow rounded p-3 mb-4">
                 <h4 class="fw-bold mb-3">
                     Предстоящие приёмы
@@ -96,19 +108,19 @@
                                     </td>
                                     <td>
                                         <form method="post" class="d-flex gap-2">
-    {% csrf_token %}
-    <input type="hidden" name="appointment" value="{{ a.pk }}">
-    <input type="number" name="duration" class="form-control form-control-sm"
-           value="{{ a.duration }}" min="5" max="480" step="5" required
-           style="width: 80px" title="Длительность, мин">
-    <input type="text" name="icd_code" class="form-control form-control-sm"
-           value="{{ cur.icd_code|default:'' }}" maxlength="10" placeholder="Код МКБ"
-           style="width: 100px">
-    <input type="text" name="diagnosis_name" class="form-control form-control-sm"
-           value="{{ cur.name|default:'' }}" maxlength="255" placeholder="Диагноз"
-           style="min-width: 160px">
-    <button type="submit" class="btn btn-sm btn-primary">Сохранить</button>
-</form>
+                                            {% csrf_token %}
+                                            <input type="hidden" name="appointment" value="{{ a.pk }}">
+                                            <input type="number" name="duration" class="form-control form-control-sm"
+                                                   value="{{ a.duration }}" min="5" max="480" step="5" required
+                                                   style="width: 80px" title="Длительность, мин">
+                                            <input type="text" name="icd_code" class="form-control form-control-sm"
+                                                   value="{{ d.icd_code|default:'' }}" maxlength="10" placeholder="Код МКБ"
+                                                   style="width: 100px">
+                                            <input type="text" name="diagnosis_name" class="form-control form-control-sm"
+                                                   value="{{ d.name|default:'' }}" maxlength="255" placeholder="Диагноз"
+                                                   style="min-width: 160px">
+                                            <button type="submit" class="btn btn-sm btn-primary">Сохранить</button>
+                                        </form>
                                     </td>
                                 </tr>
                                 {% endwith %}
@@ -121,9 +133,7 @@
                     </table>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
-
 {% endblock %}

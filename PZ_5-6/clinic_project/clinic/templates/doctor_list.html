@@ -2,29 +2,37 @@
 {% load cache %}
 {% load clinic_tags %}
 {% block title %}Врачи{% endblock %}
-{% block content %}
 
-<div class="container-fluid mt-4">
+{% block content %}
+<div class="container-fluid px-4 mt-3">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'core:home' %}"><i class="bi bi-house-door"></i> Главная</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Врачи</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="container-fluid mt-2">
     <h1 class="text-center mb-4 fw-bold">Врачи</h1>
 </div>
 
 <div class="container-fluid px-4">
     <div class="row g-4">
-
         <div class="col-md-3">
             <div class="shadow rounded bg-white p-3">
-                {% cache 0 cache_doctors %}
+                {% cache 300 busy_doctors_sidebar %}
                     {% show_busy_doctors 5 %}
                 {% endcache %}
             </div>
         </div>
 
         <div class="col-md-9">
-
             <div class="card mb-4 bg-white shadow border-0">
                 <div class="card-body">
                     <form method="get" class="row g-2 align-items-end text-start">
-
                         <div class="col-md-5">
                             <label for="filter_q" class="form-label small fw-bold">Поиск по ФИО</label>
                             <input type="text" id="filter_q" name="q" class="form-control"
@@ -58,7 +66,8 @@
                         <div class="card h-100 shadow border-0">
                             <div class="card-body">
                                 <div class="d-flex align-items-center gap-3 mb-3">
-                                    <div class="rounded-circle bg-light text-secondary fw-bold fs-4 d-flex align-items-center justify-content-center flex-shrink-0"
+                                    <div class="rounded-circle bg-light text-secondary fw-bold fs-4
+                                                d-flex align-items-center justify-content-center flex-shrink-0"
                                          style="width: 56px; height: 56px;">
                                         {{ doctor.full_name|slice:":1" }}
                                     </div>
@@ -73,9 +82,54 @@
                                     <div>Телефон: <span class="text-secondary">{{ doctor.phone }}</span></div>
                                 </div>
                             </div>
-                            <div class="card-footer bg-white small">
-                                Всего приёмов
-                                <span class="badge text-bg-primary">{{ doctor.total_appointments }}</span>
+                            <div class="card-footer bg-white small d-flex justify-content-between align-items-center">
+                                <span>
+                                    Всего приёмов
+                                    <span class="badge text-bg-primary">{{ doctor.total_appointments }}</span>
+                                </span>
+                                <a href="#doctorModal{{ doctor.pk }}" data-bs-toggle="modal" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> Быстрый просмотр
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="modal fade" id="doctorModal{{ doctor.pk }}" tabindex="-1" aria-labelledby="doctorModalLabel{{ doctor.pk }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content border-0 shadow-lg">
+                                    <div class="modal-header bg-primary text-white">
+                                        <h5 class="modal-title d-flex align-items-center gap-2" id="doctorModalLabel{{ doctor.pk }}">
+                                            <i class="bi bi-person-badge-fill"></i>
+                                            <span>{{ doctor.full_name }}</span>
+                                        </h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span class="text-muted"><i class="bi bi-stethoscope me-2"></i>Специальность</span>
+                                                <strong>{{ doctor.specialty }}</strong>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span class="text-muted"><i class="bi bi-door-open me-2"></i>Кабинет</span>
+                                                <strong>{{ doctor.cabinet }}</strong>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span class="text-muted"><i class="bi bi-telephone me-2"></i>Телефон</span>
+                                                <strong>{{ doctor.phone }}</strong>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span class="text-muted"><i class="bi bi-calendar-check me-2"></i>Всего приёмов</span>
+                                                <span class="badge text-bg-primary fs-6">{{ doctor.total_appointments }}</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a href="{% url 'clinic:doctor_detail' doctor.pk %}" class="btn btn-primary">
+                                            <i class="bi bi-person-lines-fill"></i> Карточка врача
+                                        </a>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -85,9 +139,7 @@
                     </div>
                 {% endfor %}
             </div>
-
         </div>
     </div>
 </div>
-
 {% endblock %}

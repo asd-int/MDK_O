@@ -1,7 +1,8 @@
 from datetime import datetime
 from django.shortcuts import render
 from django.utils import timezone
-from clinic.models import Doctor, Patient, Appointment
+
+from clinic.models import Appointment, Doctor, Patient
 
 
 def home(request):

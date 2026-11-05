@@ -1,10 +1,11 @@
 class Averg:
-    def get_average(self,*args):
+    def get_average(self, *args):
         if not args:
             return 0
         return sum(args) / len(args)
 
-numbers=[]
+
+numbers = []
 while True:
     number = input("Введите число(для завершения введите пустую строку):")
     if not number:
@@ -12,10 +13,5 @@ while True:
 
     numbers.append(float(number))
 
-
 average = Averg()
-
 print("Среднее значение:", average.get_average(*numbers))
-
-
-
